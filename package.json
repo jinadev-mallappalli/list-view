@@ -1,0 +1,23 @@
+{
+  "name": "list-view",
+  "version": "1.0.0",
+  "description": "A React component to render different types of lists",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinadev-mallappalli/list-view.git"
+  },
+  "author": "Jinadev Mallappalli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jinadev-mallappalli/list-view/issues"
+  },
+  "homepage": "https://github.com/jinadev-mallappalli/list-view#readme",
+  "devDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  }
+}
