@@ -78,7 +78,7 @@ export class List extends React.Component {
                   (this.props.styles.scrollDisableIndex -
                     this.props.styles.scrollEnableIndex),
                 this.props.styles.scrollDuration
-              );
+              )
             }
           } else {
             smoothScroll(
