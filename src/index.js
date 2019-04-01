@@ -1,3 +1,3 @@
 import List from './list';
 
-export const List;
+export default List

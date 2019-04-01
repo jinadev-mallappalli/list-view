@@ -1,6 +1,6 @@
 import React from 'react';
 import MediaTile from './listItem';
-import { smoothScroll } from './utils/smooth-scroll';
+import { smoothScroll } from './utils/smoothScroll';
 
 export class List extends React.Component {
   constructor(props) {
@@ -209,13 +209,13 @@ export class List extends React.Component {
     if (enableCulling) {
       filteredItems = items.filter((item, index) => index < railSize);
     }
-    const listStyle = {
+    let listStyle = {
         display: 'flex',
         alignItems: 'flex-start'
     }
 
     if(this.props.type==='horizontal-list') {
-        listStyle = {...listStyle, ...{flexWrap: 'nowrap', margin: '10px 0'}}
+        listStyle = {...listStyle, ...{flexWrap: 'nowrap', margin: '10px 0', overflowX: 'auto'}}
     }
 
     if(this.props.type==='vertical-list') {

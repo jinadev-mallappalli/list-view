@@ -1,4 +1,5 @@
 import React from 'react';
+import { Focusable } from 'react-js-spatial-navigation';
 
 class MediaItem extends React.Component {
 
@@ -26,10 +27,11 @@ class MediaItem extends React.Component {
     const showOverlay = focusStyles.includes('overlay');
     const showStrokes = focusStyles.includes('stroke');
     const height = itemOrientation === 'landscape' ? '220px' : '350px';
+    const itemWidth = `${width*100}%`
 
-    const overlayStyles = { 
+    let overlayStyles = { 
         width: '100%',
-        height: '100%',
+        height: height,
         position: 'absolute',
         top: 0,
         display: 'flex',
@@ -52,7 +54,7 @@ class MediaItem extends React.Component {
 
 
     return (
-      <div  style={{ width: `${width*100}%`, height: height}}
+      <div  style={{ width: itemWidth, minWidth: itemWidth, height: height, position: 'relative'}}
         onMouseOver={() => {
           itemFocus(focusPath)
           startScroll()
@@ -61,13 +63,18 @@ class MediaItem extends React.Component {
         onMouseLeave={() => removeFocus()}
         onKeyDown={e => itemClick(focusPath, e)}
       >
-    
+         <Focusable style={{ height: '100%'}} onFocus={() => {
+          setFocusIndex(itemIndex)
+          itemFocus(focusPath)
+          startScroll()
+        }}>
           <div style={overlayStyles}>
           </div>
           <React.Fragment>
             <img style={{ width: '100%', height: '100%'}} src={src} alt="" />
             <span>{title}</span>
           </React.Fragment>
+          </Focusable>
       </div>
     );
   }
