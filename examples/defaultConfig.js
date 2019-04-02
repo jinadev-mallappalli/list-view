@@ -47,7 +47,7 @@ const menuStyle = {
       type: 'Poster',
       height: 500,
       width: 500,
-      uri: 'https://upload.wikimedia.org/wikipedia/en/1/15/Dunkirk_Film_poster.jpg'
+      uri: 'https://images.pexels.com/photos/1117132/pexels-photo-1117132.jpeg?cs=srgb&dl=action-clapper-film-director-1117132.jpg&fm=jpg'
   }
   
   const Image1 = {
@@ -124,13 +124,14 @@ const menuStyle = {
               enableCulling: true, 
               railSize: 20,
               enabledAutoScroll: false,
-              wrapContent: false,
-              wrapFocus: false,
+              wrapContent: true,
+              wrapFocus: true,
               scrollEnableIndex: null,
               scrollDisableIndex: 6,
-              scrollDelay: 7000,
+              scrollDelay: 2000,
               scrollDuration: 5000,
-              count: 5
+              count: 3,
+              aspectRatio: 1/1
             }
           },
           {
@@ -152,6 +153,8 @@ const menuStyle = {
               enabledAutoScroll: false,
               wrapContent: true,
               wrapFocus: true,
+              count:1,
+              aspectRatio: 9/16
             }
           },
           {
@@ -172,7 +175,9 @@ const menuStyle = {
               railSize: 20,
               enabledAutoScroll: true,
               wrapContent: true,
-              wrapFocus: true
+              wrapFocus: true,
+              count: 4,
+              aspectRatio: 1/1
             }
           }
         ]

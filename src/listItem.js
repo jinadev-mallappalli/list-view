@@ -2,6 +2,23 @@ import React from 'react';
 import { Focusable } from 'react-js-spatial-navigation';
 
 class MediaItem extends React.Component {
+    getItemHeight = (itemOrientation) => {
+
+        if(itemOrientation === 'landscape') {
+            if(this.props.clientWidth) {
+                return ((this.props.clientWidth - 20) / this.props.count) * this.props.aspectRatio
+            }
+            return 220
+        }
+        else {
+            if(this.props.clientWidth) {
+                return ((this.props.clientWidth - 20) / this.props.count) * this.props.aspectRatio
+            }
+            return 350
+
+        }
+
+    }
 
   render() {
     const {
@@ -16,7 +33,9 @@ class MediaItem extends React.Component {
       tileStyles,
       setFocusIndex,
       width,
-      startScroll
+      startScroll,
+      count,
+      clientWidth
     } = this.props;
     const {
       itemOrientation,
@@ -26,12 +45,14 @@ class MediaItem extends React.Component {
     } = tileStyles;
     const showOverlay = focusStyles.includes('overlay');
     const showStrokes = focusStyles.includes('stroke');
-    const height = itemOrientation === 'landscape' ? '220px' : '350px';
+    const height = this.getItemHeight(itemOrientation)
     const itemWidth = `${width*100}%`
+    const imageHeight = Math.round(height)
+    const imageWidth = Math.round(this.props.clientWidth / this.props.count)
 
     let overlayStyles = { 
         width: '100%',
-        height: height,
+        height: '100%',
         position: 'absolute',
         top: 0,
         display: 'flex',
@@ -41,7 +62,7 @@ class MediaItem extends React.Component {
     }
 
     if(showStrokes) {
-        overlayStyles = {...overlayStyles, border: `2px solid ${strokeColor} `}
+        // overlayStyles = {...overlayStyles, border: `2px solid ${strokeColor} `}
     }
 
     if(isFocused) {
@@ -54,16 +75,16 @@ class MediaItem extends React.Component {
 
 
     return (
-      <div  style={{ width: itemWidth, minWidth: itemWidth, height: height, position: 'relative'}}
+      <div  style={{ width: itemWidth, minWidth: itemWidth, height: `${height}px`, minHeight: `${height}px`, position: 'relative', marginRight: '10px' }}
         onMouseOver={() => {
           itemFocus(focusPath)
           startScroll()
-        //   setFocusIndex(itemIndex)
+          setFocusIndex(itemIndex)
         }}
         onMouseLeave={() => removeFocus()}
         onKeyDown={e => itemClick(focusPath, e)}
       >
-         <Focusable style={{ height: '100%'}} onFocus={() => {
+         <Focusable style={{ height: '100%', maxHeight: '100%'}} onFocus={() => {
           setFocusIndex(itemIndex)
           itemFocus(focusPath)
           startScroll()
@@ -71,8 +92,7 @@ class MediaItem extends React.Component {
           <div style={overlayStyles}>
           </div>
           <React.Fragment>
-            <img style={{ width: '100%', height: '100%'}} src={src} alt="" />
-            <span>{title}</span>
+            <img style={{ width: '100%', height: '100%'}} src={`https://placeimg.com/${imageWidth}/${imageHeight}/movie`} alt="" />
           </React.Fragment>
           </Focusable>
       </div>

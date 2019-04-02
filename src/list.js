@@ -24,6 +24,9 @@ export class List extends React.Component {
       this.startScroll,
       this.props.styles.scrollDelay
     );
+    if(this._scroller) {
+        this.setState({ clientWidth: this._scroller.clientWidth })
+    }
   };
 
   componentWillUnMount = () => {
@@ -33,65 +36,34 @@ export class List extends React.Component {
   scrollWithIndex = () => {
     if (this.props.styles.scrollEnableIndex) {
       if (this.props.styles.scrollEnableIndex === this.state.focused) {
-        this._scroller.scrollLeft =
+        this._scroller.scrollLeft +=
           this._scroller.clientWidth * this.state.scrollRatio + 10;
         this.setState({ focused: this.state.focused + 1 });
-        smoothScroll(
-          this._scroller,
-          this._scroller.scrollLeft,
-          this._scroller.scrollLeft *
-            (this.props.styles.scrollDisableIndex -
-              this.props.styles.scrollEnableIndex),
-          this.props.styles.scrollDuration
-        );
       }
     }
   };
 
   startScroll = () => {
     if (this._scroller && this.props.type === 'horizontal-list') {
-      if (
-        this._scroller.scrollLeft + this._scroller.clientWidth ===
-          this._scroller.scrollWidth ||
-        this.state.focused === this.props.items.length - 1
-      ) {
+      if (this.state.focused === this.props.items.length - 1) {
         if (this.props.styles.wrapContent) {
           this._scroller.scrollLeft = 0;
         }
         if (this.props.styles.wrapFocus) {
           this.setState({ focused: 0 });
         }
-        this.setState({ focused: this.state.focused + 1 });
-      } else if (this.props.styles.enabledAutoScroll) {
-        if (
-          this._scroller.scrollLeft + this._scroller.clientWidth <
-          this._scroller.scrollWidth
-        ) {
+      }
+      else {
           if (this.props.styles.scrollEnableIndex) {
-            if (this.props.styles.scrollEnableIndex === this.state.focused) {
-              this._scroller.scrollLeft =
-                this._scroller.clientWidth * this.state.scrollRatio + 10;
-              smoothScroll(
-                this._scroller,
-                this._scroller.scrollLeft,
-                this._scroller.scrollLeft *
-                  (this.props.styles.scrollDisableIndex -
-                    this.props.styles.scrollEnableIndex),
-                this.props.styles.scrollDuration
-              )
-            }
-          } else {
-            smoothScroll(
-              this._scroller,
-              0,
-              this._scroller.scrollLeft *
-                (this.props.styles.scrollDisableIndex -
-                  this.props.styles.scrollEnableIndex),
-              this.props.styles.scrollDuration
-            );
+                this.setState({ focused: this.state.focused + 1 }, () => {
+                  if (this.props.styles.scrollEnableIndex <= this.state.focused) {
+                  this._scroller.scrollLeft += this._scroller.clientWidth * this.state.scrollRatio + 10;
+                  }
+                });
           }
-          this.setState({ focused: this.state.focused + 1 });
-        }
+          else if(this.props.styles.enabledAutoScroll) {
+            this.setState({ focused: this.state.focused + 1 }, () => this._scroller.scrollLeft += this._scroller.clientWidth * this.state.scrollRatio + 10 )
+          }
       }
     }
   };
@@ -151,21 +123,12 @@ export class List extends React.Component {
     });
   };
 
-  getCount = () => {
-    switch (this.props.styles.count) {
-      case 3:
-        return '320';
-      case 4:
-        return '1/4';
-      case 5:
-        return '1/5';
-      default:
-        return '320';
-    }
-  };
 
   scrollRatio = () => {
     switch (this.props.styles.count) {
+      case 1:
+      this.setState({ scrollRatio: 1 });
+      break;
       case 3:
         if (window.innerWidth < 768) {
           this.setState({ scrollRatio: 1 });
@@ -211,11 +174,12 @@ export class List extends React.Component {
     }
     let listStyle = {
         display: 'flex',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        cursor: 'pointer'
     }
 
     if(this.props.type==='horizontal-list') {
-        listStyle = {...listStyle, ...{flexWrap: 'nowrap', margin: '10px 0', overflowX: 'auto'}}
+        listStyle = {...listStyle, ...{flexWrap: 'nowrap', overflow: 'hidden'}}
     }
 
     if(this.props.type==='vertical-list') {
@@ -223,13 +187,11 @@ export class List extends React.Component {
     }
 
     if(this.props.type === 'grid-list') {
-        listStyle = {...listStyle, ... { flexWrap: 'wrap', margin: '10px 0'} }
+        listStyle = {...listStyle, ... { flexWrap: 'wrap'} }
     }
 
-
-
     return (
-      <div style={{ width: 'auto'}}>
+      <div style={{ width: '100%'}}>
         <h1>{this.props.title}</h1>
         <div style={listStyle}
           ref={node => (this._scroller = node)}
@@ -250,6 +212,9 @@ export class List extends React.Component {
                 width={this.state.scrollRatio}
                 startScroll={this.scrollWithIndex}
                 autoScroll={this.props.styles.enabledAutoScroll}
+                clientWidth={this.state.clientWidth}
+                count={this.props.styles.count}
+                aspectRatio={this.props.styles.aspectRatio}
               />
           ))}
         </div>
