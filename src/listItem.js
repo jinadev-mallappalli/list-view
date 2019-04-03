@@ -3,10 +3,9 @@ import { Focusable } from 'react-js-spatial-navigation';
 
 class MediaItem extends React.Component {
     getItemHeight = (itemOrientation) => {
-
         if(itemOrientation === 'landscape') {
             if(this.props.clientWidth) {
-                return ((this.props.clientWidth - 20) / this.props.count) * this.props.aspectRatio
+                return ((this.props.clientWidth) / this.props.count) * this.props.aspectRatio
             }
             return 220
         }
@@ -33,9 +32,8 @@ class MediaItem extends React.Component {
       tileStyles,
       setFocusIndex,
       width,
-      startScroll,
-      count,
-      clientWidth
+    //   startScroll,
+      type
     } = this.props;
     const {
       itemOrientation,
@@ -62,7 +60,7 @@ class MediaItem extends React.Component {
     }
 
     if(showStrokes) {
-        // overlayStyles = {...overlayStyles, border: `2px solid ${strokeColor} `}
+        overlayStyles = {...overlayStyles, border: `2px solid ${strokeColor} `}
     }
 
     if(isFocused) {
@@ -74,11 +72,12 @@ class MediaItem extends React.Component {
     }
 
 
+    const calculatedWidth = this.props.type === 'grid-list'  ? `calc(${itemWidth} - 10px)` : itemWidth
     return (
-      <div  style={{ width: itemWidth, minWidth: itemWidth, height: `${height}px`, minHeight: `${height}px`, position: 'relative', marginRight: '10px' }}
+      <div style={{ marginBottom: '10px',width: calculatedWidth, minWidth: calculatedWidth, height: `${height}px`, minHeight: `${height}px`, position: 'relative', marginRight: '10px' }}
         onMouseOver={() => {
           itemFocus(focusPath)
-          startScroll()
+        //   startScroll()
           setFocusIndex(itemIndex)
         }}
         onMouseLeave={() => removeFocus()}
@@ -87,7 +86,7 @@ class MediaItem extends React.Component {
          <Focusable style={{ height: '100%', maxHeight: '100%'}} onFocus={() => {
           setFocusIndex(itemIndex)
           itemFocus(focusPath)
-          startScroll()
+        //   startScroll()
         }}>
           <div style={overlayStyles}>
           </div>

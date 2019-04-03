@@ -24,8 +24,8 @@ export class List extends React.Component {
       this.startScroll,
       this.props.styles.scrollDelay
     );
-    if(this._scroller) {
-        this.setState({ clientWidth: this._scroller.clientWidth })
+    if (this._scroller) {
+      this.setState({ clientWidth: this._scroller.clientWidth });
     }
   };
 
@@ -37,8 +37,9 @@ export class List extends React.Component {
     if (this.props.styles.scrollEnableIndex) {
       if (this.props.styles.scrollEnableIndex === this.state.focused) {
         this._scroller.scrollLeft +=
-          this._scroller.clientWidth * this.state.scrollRatio + 10;
-        this.setState({ focused: this.state.focused + 1 });
+        this.setState({ focused: this.state.focused + 1 }, () => {
+            this._scroller.clientWidth * this.state.scrollRatio + 10;
+        });
       }
     }
   };
@@ -52,18 +53,22 @@ export class List extends React.Component {
         if (this.props.styles.wrapFocus) {
           this.setState({ focused: 0 });
         }
-      }
-      else {
-          if (this.props.styles.scrollEnableIndex) {
-                this.setState({ focused: this.state.focused + 1 }, () => {
-                  if (this.props.styles.scrollEnableIndex <= this.state.focused) {
-                  this._scroller.scrollLeft += this._scroller.clientWidth * this.state.scrollRatio + 10;
-                  }
-                });
-          }
-          else if(this.props.styles.enabledAutoScroll) {
-            this.setState({ focused: this.state.focused + 1 }, () => this._scroller.scrollLeft += this._scroller.clientWidth * this.state.scrollRatio + 10 )
-          }
+      } else {
+        if (this.props.styles.scrollEnableIndex) {
+          this.setState({ focused: this.state.focused + 1 }, () => {
+            if (this.props.styles.scrollEnableIndex <= this.state.focused   ) {
+              this._scroller.scrollLeft +=
+                this._scroller.clientWidth * this.state.scrollRatio + 10;
+            }
+          });
+        } else if (this.props.styles.enabledAutoScroll) {
+          this.setState(
+            { focused: this.state.focused + 1 },
+            () =>
+              (this._scroller.scrollLeft +=
+                this._scroller.clientWidth * this.state.scrollRatio + 10)
+          );
+        }
       }
     }
   };
@@ -93,48 +98,59 @@ export class List extends React.Component {
   removeFocus = () => this.setState({ focused: false });
 
   onMouseMove = event => {
-    event.preventDefault();
-    const { clientX, scrollLeft, scrollTop, clientY, isScrolling } = this.state;
-    if (isScrolling) {
-      this._scroller.scrollLeft = scrollLeft - clientX + event.clientX;
-      this._scroller.scrollTop = scrollTop - clientY + event.clientY;
+    if (this._scroller) {
+      event.preventDefault();
+      const {
+        clientX,
+        scrollLeft,
+        scrollTop,
+        clientY,
+        isScrolling
+      } = this.state;
+      if (isScrolling) {
+        this._scroller.scrollLeft = scrollLeft - clientX + event.clientX;
+        this._scroller.scrollTop = scrollTop - clientY + event.clientY;
+      }
     }
   };
 
   onMouseUp = () => {
-    this.setState({
-      isScrolling: false,
-      scrollLeft: 0,
-      scrollTop: 0,
-      clientX: 0,
-      clientY: 0
-    });
+    if (this._scroller) {
+      this.setState({
+        isScrolling: false,
+        scrollLeft: 0,
+        scrollTop: 0,
+        clientX: 0,
+        clientY: 0
+      });
+    }
   };
 
   onMouseDown = event => {
-    event.preventDefault();
-    const { scrollLeft, scrollTop } = this._scroller;
-    this.setState({
-      isScrolling: true,
-      scrollLeft,
-      scrollTop,
-      clientX: event.clientX,
-      clientY: event.clientY
-    });
+    if (this._scroller) {
+      event.preventDefault();
+      const { scrollLeft, scrollTop } = this._scroller;
+      this.setState({
+        isScrolling: true,
+        scrollLeft,
+        scrollTop,
+        clientX: event.clientX,
+        clientY: event.clientY
+      });
+    }
   };
-
 
   scrollRatio = () => {
     switch (this.props.styles.count) {
       case 1:
-      this.setState({ scrollRatio: 1 });
-      break;
+        this.setState({ scrollRatio: 1 });
+        break;
       case 3:
         if (window.innerWidth < 768) {
           this.setState({ scrollRatio: 1 });
-        } else if(window.innerWidth >=  768 && window.innerWidth <= 1024) {
+        } else if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
           this.setState({ scrollRatio: 50 / 100 });
-        }  else {
+        } else {
           this.setState({ scrollRatio: 33 / 100 });
         }
         break;
@@ -151,7 +167,7 @@ export class List extends React.Component {
         if (window.innerWidth < 768) {
           this.setState({ scrollRatio: 1 });
         } else if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
-          this.setState({ scrollRatio: 50/100 });
+          this.setState({ scrollRatio: 50 / 100 });
         } else {
           this.setState({ scrollRatio: 20 / 100 });
         }
@@ -173,49 +189,51 @@ export class List extends React.Component {
       filteredItems = items.filter((item, index) => index < railSize);
     }
     let listStyle = {
-        display: 'flex',
-        alignItems: 'flex-start',
-        cursor: 'pointer'
+      display: 'flex',
+      alignItems: 'flex-start',
+      cursor: 'pointer'
+    };
+
+    if (this.props.type === 'horizontal-list') {
+      listStyle = {
+        ...listStyle,
+        ...{ flexWrap: 'nowrap', overflow: 'hidden' }
+      };
     }
 
-    if(this.props.type==='horizontal-list') {
-        listStyle = {...listStyle, ...{flexWrap: 'nowrap', overflow: 'hidden'}}
+    if (this.props.type === 'vertical-list') {
+      listStyle = { ...listStyle, flexDirection: 'column' };
     }
 
-    if(this.props.type==='vertical-list') {
-        listStyle = {...listStyle, flexDirection: 'column'}
-    }
-
-    if(this.props.type === 'grid-list') {
-        listStyle = {...listStyle, ... { flexWrap: 'wrap'} }
+    if (this.props.type === 'grid-list') {
+      listStyle = { ...listStyle, ...{ flexWrap: 'wrap' } };
     }
 
     return (
-      <div style={{ width: '100%'}}>
+      <div style={{ width: '100%' }}>
         <h1>{this.props.title}</h1>
-        <div style={listStyle}
-          ref={node => (this._scroller = node)}
-        >
+        <div style={listStyle} ref={node => (this._scroller = node)}>
           {filteredItems.map((item, index) => (
-              <MediaTile
-                itemIndex={index}
-                isFocused={this.state.focused === index}
-                selected={this.state.selected === index}
-                focusPath={index}
-                src={item.images[0].uri}
-                itemClick={this.itemClick}
-                itemFocus={this.onFocus}
-                removeFocus={this.removeFocus}
-                tileStyles={this.props.styles}
-                title={item.title}
-                setFocusIndex={this.setFocusIndex}
-                width={this.state.scrollRatio}
-                startScroll={this.scrollWithIndex}
-                autoScroll={this.props.styles.enabledAutoScroll}
-                clientWidth={this.state.clientWidth}
-                count={this.props.styles.count}
-                aspectRatio={this.props.styles.aspectRatio}
-              />
+            <MediaTile
+              itemIndex={index}
+              isFocused={this.state.focused === index}
+              selected={this.state.selected === index}
+              focusPath={index}
+              src={item.uri}
+              itemClick={this.itemClick}
+              itemFocus={this.onFocus}
+              removeFocus={this.removeFocus}
+              tileStyles={this.props.styles}
+              title={item.title}
+              setFocusIndex={this.setFocusIndex}
+              width={this.state.scrollRatio}
+            //   startScroll={this.scrollWithIndex}
+              autoScroll={this.props.styles.enabledAutoScroll}
+              clientWidth={this.state.clientWidth}
+              count={this.props.styles.count}
+              aspectRatio={Number(this.props.styles.aspectRatio)}
+              type = {this.props.type}
+            />
           ))}
         </div>
       </div>
