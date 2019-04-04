@@ -97,12 +97,12 @@ class MediaItem extends React.Component {
 
     if(showZoom) {
         containerScaleStyle = { transform: 'scale(1.2)',
-        transition: 'transform 0.5s, z-index 0s .2s', zIndex: 10 }
+        transition: 'transform 0.5s 0.5s', zIndex: 10 }
         
     }
 
     let borderStyles = {
-        borderRadius: '5px',
+        border: '2px solid transparent',
     }
 
     if(this.state.showStroke) {
