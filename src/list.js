@@ -38,7 +38,7 @@ export class List extends React.Component {
       if (this.props.styles.scrollEnableIndex === this.state.focused) {
         this._scroller.scrollLeft +=
         this.setState({ focused: this.state.focused + 1 }, () => {
-            this._scroller.clientWidth * this.state.scrollRatio + 10;
+            this._scroller.clientWidth / this.state.scrollRatio + 10;
         });
       }
     }
@@ -56,23 +56,30 @@ export class List extends React.Component {
       } else {
         if (this.props.styles.scrollEnableIndex) {
           this.setState({ focused: this.state.focused + 1 }, () => {
-            if (this.props.styles.scrollEnableIndex <= this.state.focused   ) {
+            if (this.props.styles.scrollEnableIndex === this.state.focused  ) {
               this._scroller.scrollLeft +=
-                this._scroller.clientWidth * this.state.scrollRatio + 10;
+                this._scroller.clientWidth / (this.state.scrollRatio + 10);
             }
           });
         } else if (this.props.styles.enabledAutoScroll) {
           this.setState(
             { focused: this.state.focused + 1 },
-            () =>
-              (this._scroller.scrollLeft +=
-                this._scroller.clientWidth * this.state.scrollRatio + 10)
+            () => this._scroller.scrollLeft += this._scroller.clientWidth / (this.state.scrollRatio + 10)
           );
         }
       }
     }
   };
 
+  handlePrev = () => {
+    this._scroller.scrollLeft -=
+    this._scroller.clientWidth / (this.state.scrollRatio + 10)
+  }
+
+  handleNext = () => {
+    this._scroller.scrollLeft +=
+    this._scroller.clientWidth / (this.state.scrollRatio + 10)
+  }
   itemClick = (focusPath, e) => {
     if (e.keyCode === 13) {
       this.setState({ selected: focusPath });
@@ -109,7 +116,7 @@ export class List extends React.Component {
       } = this.state;
       if (isScrolling) {
         this._scroller.scrollLeft = scrollLeft - clientX + event.clientX;
-        this._scroller.scrollTop = scrollTop - clientY + event.clientY;
+        // this._scroller.scrollTop = scrollTop - clientY + event.clientY;
       }
     }
   };
@@ -133,9 +140,9 @@ export class List extends React.Component {
       this.setState({
         isScrolling: true,
         scrollLeft,
-        scrollTop,
+        scrollTop: 0,
         clientX: event.clientX,
-        clientY: event.clientY
+        clientY: 0
       });
     }
   };
@@ -171,6 +178,14 @@ export class List extends React.Component {
         } else {
           this.setState({ scrollRatio: 20 / 100 });
         }
+        case 8:
+        if (window.innerWidth < 768) {
+          this.setState({ scrollRatio: 1 });
+        } else if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+          this.setState({ scrollRatio: 50 / 100 });
+        } else {
+          this.setState({ scrollRatio:(100 / 8) / 100 });
+        }
         break;
       default:
         if (window.innerWidth < 768) {
@@ -190,8 +205,10 @@ export class List extends React.Component {
     }
     let listStyle = {
       display: 'flex',
-      alignItems: 'flex-start',
-      cursor: 'pointer'
+      alignItems: 'center',
+      cursor: 'pointer',
+      position: 'relative',
+      scrollBehavior: 'smooth'
     };
 
     if (this.props.type === 'horizontal-list') {
@@ -213,13 +230,15 @@ export class List extends React.Component {
       <div style={{ width: '100%' }}>
         <h1>{this.props.title}</h1>
         <div style={listStyle} ref={node => (this._scroller = node)}>
+          <button style={{ position: 'fixed', left: 0, zIndex: 2000, cursor: 'pointer'}} onClick={() => this.handlePrev()}>prev</button>
+          <button style={{ position: 'fixed', right: 0, zIndex: 2000, cursor: 'pointer'}} onClick={() => this.handleNext()}>next</button>
           {filteredItems.map((item, index) => (
             <MediaTile
               itemIndex={index}
               isFocused={this.state.focused === index}
               selected={this.state.selected === index}
               focusPath={index}
-              src={item.uri}
+              src={''}
               itemClick={this.itemClick}
               itemFocus={this.onFocus}
               removeFocus={this.removeFocus}

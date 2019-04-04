@@ -94,16 +94,16 @@ export default class App extends React.Component {
                     "itemOrientation": "portrait",
                     "focusStyles": [
                        "stroke",
-                       "overlay"
+                       "scale"
                     ],
                     "overlayColor": "yellow",
-                    "strokeColor": "blue",
+                    "strokeColor": "yellow",
                     "enableCulling": true,
                     "railSize": 20,
                     "enabledAutoScroll": false,
                     "wrapContent": true,
                     "wrapFocus": true,
-                    "scrollEnableIndex": 2,
+                    "scrollEnableIndex": false,
                     "scrollDisableIndex": 6,
                     "scrollDelay": 2000,
                     "scrollDuration": 5000,
